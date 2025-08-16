@@ -65,4 +65,4 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-GROQ_API_KEY = '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'
+GROQ_API_KEY = 'Your key'
