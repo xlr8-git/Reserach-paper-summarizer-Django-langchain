@@ -120,7 +120,7 @@ Modify the `styles` and `lengths` lists in `summarizer/views.py`.
    - Check that the server is running (`python manage.py runserver`)
    - Verify the URL is correct (`http://127.0.0.1:8000`)
 
-Workflow.mp4
+[Workflow.mp4](https://github.com/xlr8-git/Reserach-paper-summarizer-Django-langchain/blob/f598327eef5b488f90cc68c209a57b63b028fb54/Workflow.mp4)
 
 ### Getting Help
 - Check the Django documentation: https://docs.djangoproject.com/
