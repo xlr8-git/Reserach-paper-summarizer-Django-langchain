@@ -132,13 +132,6 @@ Modify the `styles` and `lengths` lists in `summarizer/views.py`.
 - **JavaScript**: https://developer.mozilla.org/en-US/docs/Web/JavaScript
 - **AI/LLMs**: https://groq.com/docs
 
-##  Contributing
-
-Feel free to improve this project by:
-- Adding more research papers
-- Improving the AI prompts
-- Enhancing the user interface
-- Adding new features
 
 ##  License
 
