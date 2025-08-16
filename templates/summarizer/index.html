@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Research Paper Summarizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card shadow-lg">
+            <div class="card-header text-white">
+                <h2 class="card-title mb-0">Research Paper Summarizer</h2>
+                <p class="mb-0 mt-2 opacity-90">Transform complex research into clear, actionable insights</p>
+            </div>
+            <div class="card-body">
+                <form id="summarizerForm">
+                    {% csrf_token %}
+                    
+                    <!-- Paper selection -->
+                    <div class="mb-4">
+                        <label for="paper_input" class="form-label">Select Research Paper</label>
+                        <select class="form-select" id="paper_input" name="paper_input" required>
+                            <option value="">Choose a research paper to analyze...</option>
+                            {% for paper in papers %}
+                                <option value="{{ paper }}">{{ paper }}</option>
+                            {% endfor %}
+                            <option  value="__custom__">Other (enter your own)</option>
+                        </select>
+
+                        <!-- Custom input (hidden by default) -->
+                        <input type="text" 
+                                id="custom_paper_input" 
+                                name="custom_paper_input" 
+                                class="form-control mt-2" 
+                                    placeholder="Enter your research paper title..." 
+                                style="display:none;">
+                    </div>
+
+                    <!-- Style -->
+                    <div class="mb-4"><br>
+                        <label for="style_input" class="form-label">Explanation Style</label>
+                        <select class="form-select" id="style_input" name="style_input" required>
+                            <option value="">Choose your preferred style...</option>
+                            {% for style in styles %}
+                                <option value="{{ style }}">{{ style }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Length -->
+                    <div class="mb-5"><br>
+                        <label for="length_input" class="form-label">Summary Length</label>
+                        <select class="form-select" id="length_input" name="length_input" required>
+                            <option value="">Choose summary length...</option>
+                            {% for length in lengths %}
+                                <option value="{{ length }}">{{ length }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+<BR>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="summarizeBtn">
+                            Generate AI Summary
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Loading -->
+                <div id="loadingSpinner" class="text-center mt-5" style="display: none;">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Processing...</span>
+                    </div>
+                    <p class="mt-3 mb-1">Analyzing research paper...</p>
+                    <small class="text-muted">This may take a few moments while our AI processes the content</small>
+                </div><br><br>
+
+                <!-- Results -->
+                <div id="resultsSection" class="mt-5" style="display: none;">
+                    <div class="card border-success">
+                        <div class="card-header text-white">
+                            <h5 class="mb-0" style="font-size: 28px; font-weight: bold; text-align: center;"><br>
+                                Summary Complete
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="summaryContent" class="summary-content p-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error -->
+                <div id="errorSection" class="mt-4" style="display: none;">
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> <span id="errorMessage"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Disable hover for all buttons */
+button:hover {
+    background-color: inherit !important;
+    color: inherit !important;
+    border-color: inherit !important;
+}
+/* Re-enable hover only for Generate AI Summary button */
+#summarizeBtn:hover {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+    border-color: #0d6efd !important;
+}
+</style>
+
+<!-- Markdown + Highlight.js -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script>
+marked.setOptions({
+    highlight: function(code, lang) {
+        return hljs.highlightAuto(code, [lang]).value;
+    }
+});
+
+// Toggle custom paper input
+document.getElementById('paper_input').addEventListener('change', function() {
+    const customInput = document.getElementById('custom_paper_input');
+    if (this.value === '__custom__') {
+        customInput.style.display = 'block';
+        customInput.required = true;
+    } else {
+        customInput.style.display = 'none';
+        customInput.required = false;
+    }
+});
+
+// Form submit handler
+document.getElementById('summarizerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = document.getElementById('summarizeBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const resultsSection = document.getElementById('resultsSection');
+    const errorSection = document.getElementById('errorSection');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Processing...';
+    loadingSpinner.style.display = 'block';
+    resultsSection.style.display = 'none';
+    errorSection.style.display = 'none';
+    
+    try {
+        const response = await fetch('{% url "summarize" %}', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('summaryContent').innerHTML = 
+                marked.parse(data.summary_markdown || data.summary || "");
+            resultsSection.style.display = 'block';
+            hljs.highlightAll();  // re-apply highlighting
+        } else {
+            document.getElementById('errorMessage').textContent = 
+                data.error || 'An error occurred while generating the summary.';
+            errorSection.style.display = 'block';
+        }
+    } catch (error) {
+        document.getElementById('errorMessage').textContent = 
+            'Network error: ' + error.message;
+        errorSection.style.display = 'block';
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Generate AI Summary';
+        loadingSpinner.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
