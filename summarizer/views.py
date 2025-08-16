@@ -3,10 +3,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from langchain_groq import ChatGroq
-from .prompt_generator import load_prompt  # assuming you have this utility
+from .prompt_generator import load_prompt 
 
 def index(request):
-    """Render the main research tool page"""
     context = {
         'papers': [
             "Attention Is All You Need",
@@ -30,36 +29,29 @@ def index(request):
 
 @csrf_exempt
 def summarize(request):
-    """Handle the summarization request"""
     if request.method == 'POST':
         try:
-            # Get form data
             paper_input = request.POST.get('paper_input')
             custom_paper_input = request.POST.get('custom_paper_input')
             style_input = request.POST.get('style_input') 
             length_input = request.POST.get('length_input')
 
-            # If user chose "Other", replace with custom input
             if paper_input == "__custom__" and custom_paper_input:
                 paper_input = custom_paper_input
             
-            # Validate input
             if not paper_input or not style_input or not length_input:
                 return JsonResponse({
                     'success': False,
                     'error': 'All fields are required.'
                 })
 
-            # Initialize ChatGroq model
             model = ChatGroq(
                 groq_api_key=settings.GROQ_API_KEY,
                 model_name="llama3-8b-8192"
             )
             
-            # Load summarization prompt
             template = load_prompt("summarization")
             
-            # Create chain and invoke
             chain = template | model
             result = chain.invoke({
                 'paper_input': paper_input,
@@ -69,7 +61,7 @@ def summarize(request):
             
             return JsonResponse({
                 'success': True,
-                'summary_markdown': result.content  # return as markdown
+                'summary_markdown': result.content  
             })
             
         except Exception as e:
