@@ -3,9 +3,7 @@ import os
 from langchain_core.prompts import PromptTemplate
 
 def load_prompt(prompt_name: str) -> PromptTemplate:
-    """
-    Load a prompt template from prompts.json by name.
-    """
+
     base_dir = os.path.dirname(os.path.abspath(__file__))
     prompts_path = os.path.join(base_dir, "prompts.json")
 
