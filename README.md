@@ -96,7 +96,7 @@ Edit `summarizer/prompts.json` to modify how the AI writes summaries:
 ```json
 {
     "summarization": {
-        "template": "Your custom instructions here..."
+        "template": "Your custom instructions here"
     }
 }
 ```
