@@ -120,6 +120,8 @@ Modify the `styles` and `lengths` lists in `summarizer/views.py`.
    - Check that the server is running (`python manage.py runserver`)
    - Verify the URL is correct (`http://127.0.0.1:8000`)
 
+Workflow.mp4
+
 ### Getting Help
 - Check the Django documentation: https://docs.djangoproject.com/
 - Look at the error messages in your terminal
