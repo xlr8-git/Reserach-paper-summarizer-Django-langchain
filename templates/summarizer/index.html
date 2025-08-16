@@ -15,7 +15,6 @@
                 <form id="summarizerForm">
                     {% csrf_token %}
                     
-                    <!-- Paper selection -->
                     <div class="mb-4">
                         <label for="paper_input" class="form-label">Select Research Paper</label>
                         <select class="form-select" id="paper_input" name="paper_input" required>
@@ -26,7 +25,6 @@
                             <option  value="__custom__">Other (enter your own)</option>
                         </select>
 
-                        <!-- Custom input (hidden by default) -->
                         <input type="text" 
                                 id="custom_paper_input" 
                                 name="custom_paper_input" 
@@ -35,7 +33,6 @@
                                 style="display:none;">
                     </div>
 
-                    <!-- Style -->
                     <div class="mb-4"><br>
                         <label for="style_input" class="form-label">Explanation Style</label>
                         <select class="form-select" id="style_input" name="style_input" required>
@@ -46,7 +43,6 @@
                         </select>
                     </div>
 
-                    <!-- Length -->
                     <div class="mb-5"><br>
                         <label for="length_input" class="form-label">Summary Length</label>
                         <select class="form-select" id="length_input" name="length_input" required>
@@ -64,7 +60,6 @@
                     </div>
                 </form>
 
-                <!-- Loading -->
                 <div id="loadingSpinner" class="text-center mt-5" style="display: none;">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Processing...</span>
@@ -73,7 +68,6 @@
                     <small class="text-muted">This may take a few moments while our AI processes the content</small>
                 </div><br><br>
 
-                <!-- Results -->
                 <div id="resultsSection" class="mt-5" style="display: none;">
                     <div class="card border-success">
                         <div class="card-header text-white">
@@ -87,7 +81,6 @@
                     </div>
                 </div>
 
-                <!-- Error -->
                 <div id="errorSection" class="mt-4" style="display: none;">
                     <div class="alert alert-danger">
                         <strong>Error:</strong> <span id="errorMessage"></span>
@@ -101,13 +94,11 @@
 
 {% block scripts %}
 <style>
-/* Disable hover for all buttons */
 button:hover {
     background-color: inherit !important;
     color: inherit !important;
     border-color: inherit !important;
 }
-/* Re-enable hover only for Generate AI Summary button */
 #summarizeBtn:hover {
     background-color: #0d6efd !important;
     color: #fff !important;
@@ -115,7 +106,6 @@ button:hover {
 }
 </style>
 
-<!-- Markdown + Highlight.js -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -127,7 +117,6 @@ marked.setOptions({
     }
 });
 
-// Toggle custom paper input
 document.getElementById('paper_input').addEventListener('change', function() {
     const customInput = document.getElementById('custom_paper_input');
     if (this.value === '__custom__') {
@@ -139,7 +128,6 @@ document.getElementById('paper_input').addEventListener('change', function() {
     }
 });
 
-// Form submit handler
 document.getElementById('summarizerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -167,7 +155,7 @@ document.getElementById('summarizerForm').addEventListener('submit', async funct
             document.getElementById('summaryContent').innerHTML = 
                 marked.parse(data.summary_markdown || data.summary || "");
             resultsSection.style.display = 'block';
-            hljs.highlightAll();  // re-apply highlighting
+            hljs.highlightAll(); 
         } else {
             document.getElementById('errorMessage').textContent = 
                 data.error || 'An error occurred while generating the summary.';
