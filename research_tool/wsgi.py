@@ -1,6 +1,4 @@
-"""
-WSGI config for research_tool project.
-"""
+
 
 import os
 
